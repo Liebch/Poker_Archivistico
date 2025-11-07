@@ -9,7 +9,7 @@ body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
     background: radial-gradient(circle at center, #0a4d0a, #003300);
-    background-image: url('cartas/imagenes/fondo_mesa.jpg');
+    background-image: url('cartas/imagenes/Fondo_mesa.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-blend-mode: multiply;
@@ -313,7 +313,7 @@ body {
 <div id="juego">
     <div id="tablero">
         <div id="cpu"></div>
-        <img id="mazo" src="cartas/imagenes/reverso.png" alt="Mazo">
+        <img id="mazo" src="cartas/imagenes/Reverso.png" alt="Mazo">
         <div id="jugador"></div>
     </div>
     <div id="puntaje"></div>
@@ -327,7 +327,7 @@ body {
 const mazoOriginal = [
   "cartas/imagenes/9_Recaudo.png","cartas/imagenes/10_Recaudo.png","cartas/imagenes/J_Recaudo.png","cartas/imagenes/Q_Recaudo.png","cartas/imagenes/K_Recaudo.png","cartas/imagenes/As_Recaudo.png",
   "cartas/imagenes/9_Proyectos.png","cartas/imagenes/10_Proyectos.png","cartas/imagenes/J_Proyectos.png","cartas/imagenes/Q_Proyectos.png","cartas/imagenes/K_Proyectos.png","cartas/imagenes/As_Proyectos.png",
-  "cartas/imagenes/9_Alcaldia.png","cartas/imagenes/10_Alcaldia.png","cartas/imagenes/J_Alcaldia.png","cartas/imagenes/Q_Alcaldia.png","cartas/imagenes/K_Alcaldia.png","cartas/imagenes/As_Alcaldia.png",
+  "cartas/imagenes/9_Alcaldia.PNG","cartas/imagenes/10_Alcaldia.PNG","cartas/imagenes/J_Alcaldia.PNG","cartas/imagenes/Q_Alcaldia.PNG","cartas/imagenes/K_Alcaldia.PNG","cartas/imagenes/As_Alcaldia.PNG",
   "cartas/imagenes/9_Instituciones.png","cartas/imagenes/10_Instituciones.png","cartas/imagenes/J_Instituciones.png","cartas/imagenes/Q_Instituciones.png","cartas/imagenes/K_Instituciones.png","cartas/imagenes/As_Instituciones.png"
 ];
 
@@ -342,7 +342,7 @@ function crearCarta(src,jugador){
     carta.className='carta';
     const inner=document.createElement('div');
     inner.className='carta-inner';
-    const reverso=document.createElement('img'); reverso.src='cartas/imagenes/reverso.png';
+    const reverso=document.createElement('img'); reverso.src='cartas/imagenes/Reverso.png';
     const anverso=document.createElement('img'); anverso.src=src; anverso.className='anverso';
     inner.appendChild(reverso); inner.appendChild(anverso); carta.appendChild(inner);
 
@@ -484,3 +484,4 @@ document.getElementById('btnInicio').addEventListener('click',()=>{
 </script>
 </body>
 </html>
+

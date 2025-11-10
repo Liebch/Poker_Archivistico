@@ -245,6 +245,7 @@ body {
     }
 }
 
+
 @media (max-width: 700px) {
     #juego {
         padding: 10px;
@@ -284,7 +285,27 @@ body {
         font-size: 18px;
         padding: 10px 18px;
     }
+
+    
 }
+/* Etiqueta de texto sobre el mazo */
+#mazo-container {
+    position: relative;
+    display: inline-block;
+}
+
+#mazo-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 2px 2px 6px #000;
+    pointer-events: none;
+}
+
 </style>
 </head>
 <body>
@@ -292,42 +313,77 @@ body {
 <!-- PANTALLA DE INICIO -->
 <div id="inicio">
     <h1>🎴 Póker Archivístico 🎴</h1>
-    <p>Bienvenido al juego de estrategia donde deberás gestionar tus cartas archivísticas y crear las mejores combinaciones posibles.</p>
-    <p><strong>Reglas básicas:</strong></p>
-    <ul style="text-align:left; max-width:600px;">
-        <li>Ambos jugadores reciben 6 cartas al inicio.</li>
-        <li>Puedes descartar <b>una carta</b> y robar <b>una nueva</b> por turno.</li>
-        <li>Combinaciones válidas:
+
+    <p style="max-width:800px;">
+        Un juego didáctico donde aprenderás cómo se organiza la información en los archivos municipales.
+        Tu reto es reunir la <b>jerarquía completa de documentos</b> o acumular el mayor puntaje antes de que terminen las 5 rondas.
+    </p>
+
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">📋 Cómo jugar</h2>
+    <ul style="text-align:left; max-width:720px; font-size:22px; line-height:1.5; margin-top:10px;">
+        <li>1️⃣ Cada jugador recibe <b>6 cartas</b>. El resto queda como mazo principal.</li>
+        <li>2️⃣ En tu turno puedes:
             <ul>
-                <li>Escalera (3 o más consecutivas del mismo palo): +5 pts</li>
-                <li>Color completo (6 del mismo palo): +10 pts</li>
-                <li>As suelto: +2 pts</li>
+                <li>Robar <b>una carta</b> del mazo.</li>
+                <li>Descartar <b>una carta</b> que no te sirva.</li>
             </ul>
         </li>
-        <li>Gana quien acumule más puntos al final de 5 rondas.</li>
+        <li>3️⃣ Tu objetivo es formar una <b>línea jerárquica</b> de un mismo grupo de documentos (color o tema).</li>
+        <li>4️⃣ Gana quien complete primero la jerarquía o quien obtenga más puntos después de 5 rondas.</li>
     </ul>
-    <button id="btnInicio">Comenzar Juego</button>
-</div>
 
-<!-- TABLERO DEL JUEGO -->
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">🏛️ Los cuatro grupos de documentos</h2>
+    <p style="max-width:720px; font-size:22px; line-height:1.5;">
+        Cada grupo representa un área del archivo municipal:
+        <br>🏛️ Alcaldía Municipal
+        &nbsp;&nbsp;🏗️ Proyectos de Infraestructura
+        &nbsp;&nbsp;📚 Instituciones Educativas y Culturales
+        &nbsp;&nbsp;💰 Recaudo y Finanzas
+    </p>
+
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">🗂️ Niveles de organización documental</h2>
+    <p style="max-width:720px; font-size:22px; line-height:1.5;">
+        Cada carta representa un nivel jerárquico dentro del archivo:
+        <br><b>9</b> Tipología documental → documentos individuales (oficio, contrato, acta).<br>
+        <b>10</b> Subserie documental → conjunto de documentos similares.<br>
+        <b>J</b> Serie documental → documentos generados por una misma función o trámite.<br>
+        <b>Q</b> Subsección → grupo de trabajo dentro de una dependencia.<br>
+        <b>K</b> Sección → dependencia principal de la entidad.<br>
+        <b>A</b> Fondo documental → toda la documentación producida por una entidad.
+    </p>
+
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">🏆 Puntuación</h2>
+    <ul style="text-align:left; max-width:720px; font-size:22px; line-height:1.5;">
+        <li>Jerarquía completa (6 cartas del mismo grupo) = <b>10 puntos</b></li>
+        <li>3 o más niveles consecutivos del mismo grupo = <b>5 puntos</b></li>
+        <li>As suelto (Fondo documental) = <b>2 puntos</b></li>
+        <li>Se permiten combinaciones, siempre que cumplan las reglas.</li>
+    </ul>
+
+    <button id="btnInicio" style="margin-top:25px;">🂡 Comenzar Juego</button>
+</div>
 <div id="juego">
     <div id="tablero">
         <div id="cpu"></div>
-        <img id="mazo" src="cartas/imagenes/Reverso.png" alt="Mazo">
+        <div id="mazo-container">
+    <img id="mazo" src="cartas/imagenes/reverso.png" alt="Mazo de cartas">
+    <div id="mazo-label">Robar</div>
+</div>
         <div id="jugador"></div>
     </div>
     <div id="puntaje"></div>
     <div id="mensajes"></div>
     <div id="botones">
-        <button id="terminarTurno">Terminar Turno</button>
-        <button id="reiniciar">Comenzar de nuevo</button>
+        <button id="terminarTurno">Terminar turno</button>
+        <button id="reiniciar">Reiniciar</button>
     </div>
 </div>
+
 <script>
 const mazoOriginal = [
   "cartas/imagenes/9_Recaudo.png","cartas/imagenes/10_Recaudo.png","cartas/imagenes/J_Recaudo.png","cartas/imagenes/Q_Recaudo.png","cartas/imagenes/K_Recaudo.png","cartas/imagenes/As_Recaudo.png",
   "cartas/imagenes/9_Proyectos.png","cartas/imagenes/10_Proyectos.png","cartas/imagenes/J_Proyectos.png","cartas/imagenes/Q_Proyectos.png","cartas/imagenes/K_Proyectos.png","cartas/imagenes/As_Proyectos.png",
-  "cartas/imagenes/9_Alcaldia.PNG","cartas/imagenes/10_Alcaldia.PNG","cartas/imagenes/J_Alcaldia.PNG","cartas/imagenes/Q_Alcaldia.PNG","cartas/imagenes/K_Alcaldia.PNG","cartas/imagenes/As_Alcaldia.PNG",
+  "cartas/imagenes/9_Alcaldia.png","cartas/imagenes/10_Alcaldia.png","cartas/imagenes/J_Alcaldia.png","cartas/imagenes/Q_Alcaldia.png","cartas/imagenes/K_Alcaldia.png","cartas/imagenes/As_Alcaldia.png",
   "cartas/imagenes/9_Instituciones.png","cartas/imagenes/10_Instituciones.png","cartas/imagenes/J_Instituciones.png","cartas/imagenes/Q_Instituciones.png","cartas/imagenes/K_Instituciones.png","cartas/imagenes/As_Instituciones.png"
 ];
 
@@ -342,7 +398,7 @@ function crearCarta(src,jugador){
     carta.className='carta';
     const inner=document.createElement('div');
     inner.className='carta-inner';
-    const reverso=document.createElement('img'); reverso.src='cartas/imagenes/Reverso.png';
+    const reverso=document.createElement('img'); reverso.src='cartas/imagenes/reverso.png';
     const anverso=document.createElement('img'); anverso.src=src; anverso.className='anverso';
     inner.appendChild(reverso); inner.appendChild(anverso); carta.appendChild(inner);
 
@@ -484,6 +540,3 @@ document.getElementById('btnInicio').addEventListener('click',()=>{
 </script>
 </body>
 </html>
-
-
-

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Póker Archivístico</title>
+<style>
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: radial-gradient(circle at center, #0a4d0a, #003300);
+    background-image: url('cartas/imagenes/fondo_mesa.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-blend-mode: multiply;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    color: rgb(255, 255, 255);
+}
+
+/* ----- PANTALLA DE INICIO ----- */
+#inicio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+    max-width: 800px;
+    animation: fadeIn 1s ease-in-out;
+    backdrop-filter: blur(3px);
+}
+
+#inicio h1 {
+    font-size: 56px;
+    margin-bottom: 25px;
+    color: #FFD700;
+    text-shadow: 2px 2px 6px #000;
+}
+
+#inicio p {
+    font-size: 30px;
+    line-height: 1.6;
+    margin: 12px 0;
+}
+
+#inicio ul {
+    font-size: 28px;
+    line-height: 1.7;
+}
+
+#btnInicio {
+    margin-top: 35px;
+    background: #FFD700;
+    color: #004d00;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s, background 0.3s;
+}
+
+#btnInicio:hover {
+    background: #ffc107;
+    transform: scale(1.05);
+}
+
+/* ----- JUEGO ----- */
+#juego {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1300px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#tablero {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 80px;
+    margin-bottom: 25px;
+}
+
+#cpu, #jugador {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(2, 280px);
+    gap: 12px;
+}
+
+.carta {
+    width: 200px;
+    height: 280px;
+    perspective: 1000px;
+    position: relative;
+}
+
+.carta-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    position: relative;
+}
+
+.carta.flipped .carta-inner { transform: rotateY(180deg); }
+
+.carta img {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.carta .anverso { transform: rotateY(180deg); }
+
+.descartar-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255,0,0,0.8);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 14px;
+    z-index: 10;
+}
+
+#mazo {
+    width: 120px;
+    height: 168px;
+    cursor: pointer;
+    margin: 20px;
+    transition: transform 0.3s;
+}
+
+#mazo.robar {
+    transform: translateY(-20px);
+}
+
+#puntaje, #mensajes {
+    color: white;
+    font-size: 32px;
+    margin: 10px;
+    text-align: center;
+    min-height: 40px;
+}
+
+#mensajes.pensando::after {
+    content: ' .';
+    animation: dots 1.2s infinite steps(3, end);
+}
+
+@keyframes dots {
+    0%, 20% { content: ' .'; }
+    40% { content: ' ..'; }
+    60%, 100% { content: ' ...'; }
+}
+
+#botones {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+#reiniciar, #terminarTurno {
+    padding: 12px 18px;
+    font-size: 26px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+#terminarTurno {
+    background: #FFD700;
+    color: #003300;
+    font-weight: bold;
+    border: none;
+}
+
+#terminarTurno:disabled {
+    background: gray;
+    color: white;
+}
+
+#reiniciar {
+    background: #d9534f;
+    color: white;
+    border: none;
+    display: none;
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ===== RESPONSIVIDAD ===== */
+@media (max-width: 1000px) {
+    #tablero {
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+    }
+
+    #cpu, #jugador {
+        grid-template-columns: repeat(3, 120px);
+        grid-template-rows: repeat(2, 170px);
+    }
+
+    .carta {
+        width: 120px;
+        height: 170px;
+    }
+
+    #mazo {
+        width: 90px;
+        height: 126px;
+    }
+
+    body {
+        font-size: 32px;
+    }
+
+    #puntaje, #mensajes {
+        font-size: 24px;
+    }
+
+    #terminarTurno, #reiniciar {
+        font-size: 20px;
+        padding: 8px 14px;
+    }
+}
+
+
+@media (max-width: 700px) {
+    #juego {
+        padding: 10px;
+    }
+
+    #tablero {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    #cpu, #jugador {
+        grid-template-columns: repeat(2, 110px);
+        grid-template-rows: repeat(3, 150px);
+    }
+
+    .carta {
+        width: 110px;
+        height: 150px;
+    }
+
+    #mazo {
+        order: 2;
+        margin: 10px auto;
+    }
+
+    #botones {
+        order: 3;
+        margin-top: 10px;
+    }
+
+    #puntaje, #mensajes {
+        font-size: 22px;
+    }
+
+    #btnInicio {
+        font-size: 18px;
+        padding: 10px 18px;
+    }
+
+    
+}
+/* Etiqueta de texto sobre el mazo */
+#mazo-container {
+    position: relative;
+    display: inline-block;
+}
+
+#mazo-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 2px 2px 6px #000;
+    pointer-events: none;
+}
+
+</style>
+</head>
+<body>
+
+<!-- PANTALLA DE INICIO -->
+<div id="inicio">
+    <h1>🎴 Póker Archivístico 🎴</h1>
+
+    <p style="max-width:800px;">
+        Un juego didáctico donde aprenderás cómo se organiza la información en los archivos municipales.
+        Tu reto es reunir la <b>jerarquía completa de documentos</b> o acumular el mayor puntaje antes de que terminen las 5 rondas.
+    </p>
+
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">📋 Cómo jugar</h2>
+    <ul style="text-align:left; max-width:720px; font-size:22px; line-height:1.5; margin-top:10px;">
+        <li>1️⃣ Cada jugador recibe <b>6 cartas</b>. El resto queda como mazo principal.</li>
+        <li>2️⃣ En tu turno puedes:
+            <ul>
+                <li>Robar <b>una carta</b> del mazo.</li>
+                <li>Descartar <b>una carta</b> que no te sirva.</li>
+            </ul>
+        </li>
+        <li>3️⃣ Tu objetivo es formar una <b>línea jerárquica</b> de un mismo grupo de documentos (color o tema).</li>
+        <li>4️⃣ Gana quien complete primero la jerarquía o quien obtenga más puntos después de 5 rondas.</li>
+    </ul>
+
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">🏛️ Los cuatro grupos de documentos</h2>
+    <p style="max-width:720px; font-size:22px; line-height:1.5;">
+        Cada grupo representa un área del archivo municipal:
+        <br>🏛️ Alcaldía Municipal
+        &nbsp;&nbsp;🏗️ Proyectos de Infraestructura
+        &nbsp;&nbsp;📚 Instituciones Educativas y Culturales
+        &nbsp;&nbsp;💰 Recaudo y Finanzas
+    </p>
+
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">🗂️ Niveles de organización documental</h2>
+    <p style="max-width:720px; font-size:22px; line-height:1.5;">
+        Cada carta representa un nivel jerárquico dentro del archivo:
+        <br><b>9</b> Tipología documental → documentos individuales (oficio, contrato, acta).<br>
+        <b>10</b> Subserie documental → conjunto de documentos similares.<br>
+        <b>J</b> Serie documental → documentos generados por una misma función o trámite.<br>
+        <b>Q</b> Subsección → grupo de trabajo dentro de una dependencia.<br>
+        <b>K</b> Sección → dependencia principal de la entidad.<br>
+        <b>A</b> Fondo documental → toda la documentación producida por una entidad.
+    </p>
+
+    <h2 style="color:#FFD700; text-shadow:1px 1px 4px #000;">🏆 Puntuación</h2>
+    <ul style="text-align:left; max-width:720px; font-size:22px; line-height:1.5;">
+        <li>Jerarquía completa (6 cartas del mismo grupo) = <b>10 puntos</b></li>
+        <li>3 o más niveles consecutivos del mismo grupo = <b>5 puntos</b></li>
+        <li>As suelto (Fondo documental) = <b>2 puntos</b></li>
+        <li>Se permiten combinaciones, siempre que cumplan las reglas.</li>
+    </ul>
+
+    <button id="btnInicio" style="margin-top:25px;">🂡 Comenzar Juego</button>
+</div>
+<div id="juego">
+    <div id="tablero">
+        <div id="cpu"></div>
+        <div id="mazo-container">
+    <img id="mazo" src="cartas/imagenes/reverso.png" alt="Mazo de cartas">
+    <div id="mazo-label">Robar</div>
+</div>
+        <div id="jugador"></div>
+    </div>
+    <div id="puntaje"></div>
+    <div id="mensajes"></div>
+    <div id="botones">
+        <button id="terminarTurno">Terminar turno</button>
+        <button id="reiniciar">Reiniciar</button>
+    </div>
+</div>
+
+<script>
+const mazoOriginal = [
+  "cartas/imagenes/9_Recaudo.png","cartas/imagenes/10_Recaudo.png","cartas/imagenes/J_Recaudo.png","cartas/imagenes/Q_Recaudo.png","cartas/imagenes/K_Recaudo.png","cartas/imagenes/As_Recaudo.png",
+  "cartas/imagenes/9_Proyectos.png","cartas/imagenes/10_Proyectos.png","cartas/imagenes/J_Proyectos.png","cartas/imagenes/Q_Proyectos.png","cartas/imagenes/K_Proyectos.png","cartas/imagenes/As_Proyectos.png",
+  "cartas/imagenes/9_Alcaldia.png","cartas/imagenes/10_Alcaldia.png","cartas/imagenes/J_Alcaldia.png","cartas/imagenes/Q_Alcaldia.png","cartas/imagenes/K_Alcaldia.png","cartas/imagenes/As_Alcaldia.png",
+  "cartas/imagenes/9_Instituciones.png","cartas/imagenes/10_Instituciones.png","cartas/imagenes/J_Instituciones.png","cartas/imagenes/Q_Instituciones.png","cartas/imagenes/K_Instituciones.png","cartas/imagenes/As_Instituciones.png"
+];
+
+let mazo=[], manoJugador=[], manoCPU=[];
+let turnoJugador=true, roboTurno=false, descartadoTurno=false, cierreActivo=false, juegoFinalizado=false;
+let rondaActual=1, maxRondas=5;
+
+function mezclar(array){ for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];} }
+
+function crearCarta(src,jugador){
+    const carta=document.createElement('div');
+    carta.className='carta';
+    const inner=document.createElement('div');
+    inner.className='carta-inner';
+    const reverso=document.createElement('img'); reverso.src='cartas/imagenes/reverso.png';
+    const anverso=document.createElement('img'); anverso.src=src; anverso.className='anverso';
+    inner.appendChild(reverso); inner.appendChild(anverso); carta.appendChild(inner);
+
+    if(jugador==='jugador'){
+        const btn=document.createElement('button');
+        btn.className='descartar-btn'; btn.textContent='X';
+        btn.addEventListener('click',(e)=>{
+            if(juegoFinalizado)return;
+            e.stopPropagation();
+            if(descartadoTurno)return;
+            const i=manoJugador.indexOf(src);
+            if(i!==-1){
+                manoJugador.splice(i,1);
+                carta.remove();
+                mazo.push(src);
+                mezclar(mazo);
+            }
+            descartadoTurno=true;
+            actualizarPuntaje();
+        });
+        carta.appendChild(btn);
+        carta.addEventListener('click',()=>{ if(turnoJugador && !juegoFinalizado) carta.classList.toggle('flipped'); });
+    }
+    return carta;
+}
+
+function repartirInicial(){
+    document.getElementById('jugador').innerHTML='';
+    document.getElementById('cpu').innerHTML='';
+    for(let i=0;i<6;i++){
+        const cj=mazo.pop(); manoJugador.push(cj); document.getElementById('jugador').appendChild(crearCarta(cj,'jugador'));
+        const cc=mazo.pop(); manoCPU.push(cc); document.getElementById('cpu').appendChild(crearCarta(cc,'cpu'));
+    }
+    actualizarPuntaje();
+}
+
+document.getElementById('mazo').addEventListener('click',()=>{
+    if(juegoFinalizado || !turnoJugador || roboTurno) return;
+    if(manoJugador.length>=6){alert('Máximo de cartas alcanzado.'); return;}
+    const carta=mazo.pop();
+    manoJugador.push(carta);
+    document.getElementById('jugador').appendChild(crearCarta(carta,'jugador'));
+    roboTurno=true;
+    actualizarPuntaje();
+});
+
+document.getElementById('terminarTurno').addEventListener('click',()=>{
+    if(!turnoJugador || juegoFinalizado)return;
+    turnoJugador=false;
+    document.getElementById('terminarTurno').disabled=true;
+    document.getElementById('mensajes').innerText='🤖 La CPU está pensando...';
+    setTimeout(()=>{
+        cpuJuega();
+        document.getElementById('mensajes').innerText='Tu turno 👤';
+        document.getElementById('terminarTurno').disabled=false;
+        turnoJugador=true;
+        roboTurno=false; descartadoTurno=false;
+        rondaActual++;
+        if(rondaActual>maxRondas || cierreActivo) finalizarPartida();
+    },2000);
+});
+
+function cpuJuega(){
+    if(manoCPU.length>=6){
+        const i=Math.floor(Math.random()*manoCPU.length);
+        mazo.push(manoCPU[i]);
+        manoCPU.splice(i,1);
+        mezclar(mazo);
+    }
+    if(manoCPU.length<6 && mazo.length>0){
+        const carta=mazo.pop();
+        manoCPU.push(carta);
+    }
+    actualizarPuntaje();
+}
+
+function valorANumero(v){return {9:9,10:10,J:11,Q:12,K:13,As:14}[v]||0;}
+function calcularDetallePuntaje(mano){
+    const palos=["Recaudo","Proyectos","Alcaldia","Instituciones"];
+    const porPalo={Recaudo:[],Proyectos:[],Alcaldia:[],Instituciones:[]};
+    mano.forEach(c=>{
+        const p=palos.find(x=>c.includes(x));
+        if(!p)return;
+        const v=c.match(/9|10|J|Q|K|As/)[0];
+        porPalo[p].push(valorANumero(v));
+    });
+    let total=0,detalles=[];
+    for(const p of palos){
+        const vals=porPalo[p].sort((a,b)=>a-b);
+        if(!vals.length)continue;
+        let consec=1,escalera=false;
+        for(let i=1;i<vals.length;i++){
+            if(vals[i]===vals[i-1]+1){consec++;if(consec>=3)escalera=true;}
+            else consec=1;
+        }
+        if(escalera){total+=5;detalles.push(`Escalera en ${p} (+5)`);}
+        if(vals.length===6){total+=10;detalles.push(`Color completo (${p}) (+10)`);}
+        if(vals.length===1 && vals[0]===14){total+=2;detalles.push(`As suelto en ${p} (+2)`);}
+    }
+    return {total,detalles};
+}
+
+function actualizarPuntaje(){
+    const p=calcularDetallePuntaje(manoJugador).total;
+    document.getElementById('puntaje').innerHTML=`<b>Puntaje Jugador:</b> ${p}`;
+}
+
+function finalizarPartida(){
+    juegoFinalizado=true;
+    document.querySelectorAll('#cpu .carta').forEach(c=>c.classList.add('flipped'));
+    const j=calcularDetallePuntaje(manoJugador);
+    const c=calcularDetallePuntaje(manoCPU);
+    let resultado=j.total>c.total?'¡Ganaste!':(j.total<c.total?'Perdiste':'Empate');
+    document.getElementById('mensajes').innerHTML=
+    `Partida finalizada. ${resultado}<br><b>Jugador:</b> ${j.total} pts<br>${j.detalles.join('<br>')}<br><b>CPU:</b> ${c.total} pts<br>${c.detalles.join('<br>')}`;
+    document.getElementById('terminarTurno').disabled=true;
+    document.getElementById('reiniciar').style.display='inline';
+}
+
+document.getElementById('reiniciar').addEventListener('click',()=>{
+    juegoFinalizado=false;
+    cierreActivo=false;
+    turnoJugador=true;
+    rondaActual=1;
+    document.getElementById('mensajes').innerText='';
+    document.getElementById('puntaje').innerText='';
+    document.getElementById('reiniciar').style.display='none';
+    document.getElementById('terminarTurno').disabled=false;
+    mazo=[...mazoOriginal]; mezclar(mazo);
+    manoJugador=[]; manoCPU=[];
+    repartirInicial();
+});
+
+document.getElementById('btnInicio').addEventListener('click',()=>{
+    document.getElementById('inicio').style.display='none';
+    document.getElementById('juego').style.display='flex';
+    mazo=[...mazoOriginal]; mezclar(mazo); repartirInicial();
+});
+</script>
+</body>
+</html>
